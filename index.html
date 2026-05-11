@@ -458,26 +458,31 @@ footer a:hover{text-decoration:underline}
      FIREBASE + APP SCRIPT
 ════════════════════════════════════════ -->
 <script type="module">
-import { initializeApp }                   from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-import { getAuth, onAuthStateChanged,
-         signInAnonymously,
-         signInWithEmailAndPassword,
-         createUserWithEmailAndPassword,
-         signOut, updateProfile }          from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
-import { getFirestore, doc, setDoc,
-         deleteDoc, getDoc, getDocs,
-         collection, serverTimestamp }     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 /* ── YOUR FIREBASE CONFIG ── */
-const firebaseConfig = {
-  apiKey:            "AIzaSyCYh9qv8YolwJJ4Pu-9iIgY-aJF2U-1l20",
-  authDomain:        "anime-555.firebaseapp.com",
-  projectId:         "anime-555",
-  storageBucket:     "anime-555.firebasestorage.app",
-  messagingSenderId: "1024204889528",
-  appId:             "1:1024204889528:web:17ed8b2879e5cfcada434d"
-};
 
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCYh9qv8YolwJJ4Pu-9iIgY-aJF2U-1l20",
+    authDomain: "anime-555.firebaseapp.com",
+    projectId: "anime-555",
+    storageBucket: "anime-555.firebasestorage.app",
+    messagingSenderId: "1024204889528",
+    appId: "1:1024204889528:web:8e0ecf872303e1dcda434d",
+    measurementId: "G-G1J5F0F3QW"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
