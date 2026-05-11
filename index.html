@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="description" content="AniTrack — Discover trending, seasonal, and top-rated anime with legal watch links and official trailers.">
+<meta name="description" content="AniTrack — Discover trending, seasonal, and top-rated anime with legal watch links, official trailers, and manga options.">
 <meta name="theme-color" content="#0a0a0f">
 <meta name="impact-site-verification" value="7ba13289-e3a1-4c49-9525-c04ed5c6aae1">
 <title>AniTrack — Trending Anime</title>
@@ -708,6 +708,29 @@ main{padding:1.2rem 1rem}
 }
 .modal-detail-btn:hover{border-color:var(--accent);color:var(--accent)}
 
+.tab-switch{
+  display:flex;
+  gap:8px;
+  padding:0 1rem 1rem;
+  flex-wrap:wrap;
+}
+.tab-btn{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  color:var(--muted);
+  padding:8px 14px;
+  border-radius:10px;
+  font-family:'Outfit',sans-serif;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+}
+.tab-btn.active{
+  background:var(--accent);
+  color:#fff;
+  border-color:var(--accent);
+}
+
 #btt{
   position:fixed;
   bottom:16px;
@@ -779,6 +802,7 @@ footer a:hover{text-decoration:underline}
   .modal-poster{width:100%;height:210px}
   .watch-btns{flex-direction:column}
   .watch-btn{width:100%;justify-content:center}
+  .tab-switch{padding:0 .85rem .85rem}
 }
 
 @media (max-width: 390px){
@@ -930,12 +954,14 @@ footer a:hover{text-decoration:underline}
     <div class="modal-close-row">
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
+
     <div class="modal-trailer" id="modalTrailer">
       <div class="no-trailer">
         <div class="no-trailer-icon">🎬</div>
         <span>No trailer available</span>
       </div>
     </div>
+
     <div class="modal-header">
       <img class="modal-poster" id="mPoster" src="" alt="">
       <div class="modal-info">
@@ -948,12 +974,29 @@ footer a:hover{text-decoration:underline}
         </div>
       </div>
     </div>
+
+    <div class="tab-switch">
+      <button class="tab-btn active" id="tabAnimeBtn" onclick="switchDetailTab('anime')">Anime</button>
+      <button class="tab-btn" id="tabMangaBtn" onclick="switchDetailTab('manga')">Manga</button>
+    </div>
+
     <div class="modal-body">
-      <p class="modal-synopsis" id="mSynopsis"></p>
-      <div class="watch-section">
-        <h4>Watch Legally</h4>
-        <div class="watch-btns" id="mWatchBtns"></div>
+      <div id="animeTab">
+        <p class="modal-synopsis" id="mSynopsis"></p>
+        <div class="watch-section">
+          <h4>Watch Legally</h4>
+          <div class="watch-btns" id="mWatchBtns"></div>
+        </div>
       </div>
+
+      <div id="mangaTab" style="display:none;">
+        <div class="watch-section">
+          <h4>Read Manga Legally</h4>
+          <div class="watch-btns" id="mMangaBtns"></div>
+        </div>
+        <p class="modal-synopsis" id="mangaNote"></p>
+      </div>
+
       <button class="modal-detail-btn" id="mDetailBtn" onclick="goDetail()">View Full Detail Page →</button>
       <a class="modal-detail-btn" id="mOfficialTrailerBtn" href="#" target="_blank" rel="noopener" style="display:none;">Watch Official Trailer on YouTube</a>
     </div>
@@ -963,6 +1006,7 @@ footer a:hover{text-decoration:underline}
 <script>
 const API='https://api.jikan.moe/v4';
 let curTab='trending', curGenreId=0, heroData=[], heroIdx=0, heroTimer=null, curModalId=null, synopsisExpanded=false;
+let currentAnimeData = null;
 
 const WATCH_LINKS=[
   {l:'▶ Crunchyroll',u:'https://www.crunchyroll.com/search?q=',append:true,c:'wb-primary'},
@@ -971,6 +1015,34 @@ const WATCH_LINKS=[
   {l:'Prime Video',u:'https://www.amazon.co.uk/s?k=',append:true,c:'wb-secondary'},
   {l:'Tubi (Free)',u:'https://tubitv.com/category/anime',append:false,c:'wb-secondary'}
 ];
+
+const MANGA_LINKS = {
+  default: [
+    { l: 'VIZ Manga', u: 'https://www.viz.com/vizmanga', c: 'wb-primary' },
+    { l: 'MANGA Plus', u: 'https://mangaplus.shueisha.co.jp/', c: 'wb-secondary' }
+  ]
+};
+
+const MANGA_MAP = {
+  'One Piece': [
+    { l: 'MANGA Plus', u: 'https://mangaplus.shueisha.co.jp/', c: 'wb-primary' },
+    { l: 'VIZ Manga', u: 'https://www.viz.com/vizmanga', c: 'wb-secondary' }
+  ],
+  'My Hero Academia': [
+    { l: 'MANGA Plus', u: 'https://mangaplus.shueisha.co.jp/', c: 'wb-primary' },
+    { l: 'VIZ Manga', u: 'https://www.viz.com/vizmanga', c: 'wb-secondary' }
+  ],
+  'Jujutsu Kaisen': [
+    { l: 'MANGA Plus', u: 'https://mangaplus.shueisha.co.jp/', c: 'wb-primary' },
+    { l: 'VIZ Manga', u: 'https://www.viz.com/vizmanga', c: 'wb-secondary' }
+  ],
+  'Naruto': [
+    { l: 'VIZ Manga', u: 'https://www.viz.com/vizmanga', c: 'wb-primary' }
+  ],
+  'Dragon Ball': [
+    { l: 'VIZ Manga', u: 'https://www.viz.com/vizmanga', c: 'wb-primary' }
+  ]
+};
 
 function esc(s){
   return String(s||'')
@@ -1196,9 +1268,39 @@ async function doSearch(q,fullGrid=false){
   }
 }
 
+function switchDetailTab(tab){
+  const animeTab=document.getElementById('animeTab');
+  const mangaTab=document.getElementById('mangaTab');
+  const animeBtn=document.getElementById('tabAnimeBtn');
+  const mangaBtn=document.getElementById('tabMangaBtn');
+  if(tab==='anime'){
+    animeTab.style.display='block';
+    mangaTab.style.display='none';
+    animeBtn.classList.add('active');
+    mangaBtn.classList.remove('active');
+  }else{
+    animeTab.style.display='none';
+    mangaTab.style.display='block';
+    animeBtn.classList.remove('active');
+    mangaBtn.classList.add('active');
+  }
+}
+
+function buildMangaButtons(title){
+  const mapped = MANGA_MAP[title];
+  const list = mapped || MANGA_LINKS.default;
+  document.getElementById('mMangaBtns').innerHTML = list.map(l =>
+    `<a href="${l.u}" target="_blank" rel="noopener" class="watch-btn ${l.c}">${l.l}</a>`
+  ).join('');
+  document.getElementById('mangaNote').textContent = mapped
+    ? 'Official licensed manga links for this title.'
+    : 'Official licensed manga platforms. Availability depends on title and region.';
+}
+
 async function openModal(id,title){
   curModalId=id;
   synopsisExpanded=false;
+  currentAnimeData = null;
   document.getElementById('mTitle').textContent=title||'Loading...';
   document.getElementById('mSub').textContent='';
   document.getElementById('mTags').innerHTML='';
@@ -1207,13 +1309,20 @@ async function openModal(id,title){
   document.getElementById('mSynopsis').textContent='Loading details...';
   document.getElementById('mPoster').src='';
   document.getElementById('mWatchBtns').innerHTML='';
+  document.getElementById('mMangaBtns').innerHTML='';
+  document.getElementById('mangaNote').textContent='';
   document.getElementById('mOfficialTrailerBtn').style.display='none';
   document.getElementById('modalTrailer').innerHTML='<div class="no-trailer"><div class="no-trailer-icon">🎬</div><span>Loading trailer...</span></div>';
+  document.getElementById('animeTab').style.display='block';
+  document.getElementById('mangaTab').style.display='none';
+  document.getElementById('tabAnimeBtn').classList.add('active');
+  document.getElementById('tabMangaBtn').classList.remove('active');
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow='hidden';
   try{
     const d=await api(`${API}/anime/${id}/full`);
     const a=d.data;
+    currentAnimeData = a;
     document.getElementById('mPoster').src=a.images?.jpg?.large_image_url||'';
     document.getElementById('mTitle').textContent=a.title;
     document.getElementById('mSub').textContent=a.title_english||a.title_japanese||'';
@@ -1234,7 +1343,7 @@ async function openModal(id,title){
     document.getElementById('mWatchBtns').innerHTML=WATCH_LINKS.map(l=>`
       <a href="${l.append?l.u+encodeURIComponent(a.title):l.u}" target="_blank" rel="noopener" class="watch-btn ${l.c}">${l.l}</a>`).join('');
     const yt=a.trailer?.youtube_id;
-    const off=a.trailer?.url || '';
+    const off=a.trailer?.url || a.trailer?.embed_url || '';
     document.getElementById('modalTrailer').innerHTML=yt
       ?`<iframe src="https://www.youtube.com/embed/${yt}?autoplay=1" allow="autoplay;fullscreen" allowfullscreen></iframe>`
       :`<div class="no-trailer"><div class="no-trailer-icon">🎬</div><span>No trailer available</span></div>`;
@@ -1244,8 +1353,10 @@ async function openModal(id,title){
       aBtn.style.display='block';
       aBtn.textContent='Watch Official Trailer on YouTube';
     }
+    buildMangaButtons(a.title);
   }catch(e){
     document.getElementById('mSynopsis').textContent='Could not load details. Please try again.';
+    buildMangaButtons(title || '');
   }
 }
 
