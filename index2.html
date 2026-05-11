@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="description" content="AniTrack — Free legal hub for trending, seasonal and top-rated anime updated daily.">
 <meta name="theme-color" content="#0a0a0f">
 <meta name="impact-site-verification" value="7ba13289-e3a1-4c49-9525-c04ed5c6aae1">
@@ -40,7 +40,6 @@ body{
 }
 img,video,picture{max-width:100%;height:auto}
 button,a,input{touch-action:manipulation}
-
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--bg2)}
 ::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
@@ -106,7 +105,6 @@ header{
   color:var(--text);
 }
 .nav-links button.active{color:var(--accent)}
-
 .search-wrap{
   grid-area:search;
   width:100%;
@@ -932,6 +930,122 @@ footer a:hover{text-decoration:underline}
   .hstat-label{font-size:8.5px}
   .genre-pill{padding:7px 11px;font-size:11px}
 }
+
+/* IMPORTANT MOBILE OVERRIDE */
+@media (max-width: 900px){
+  header{
+    display:grid !important;
+    grid-template-columns:auto auto;
+    grid-template-areas:"logo burger" "search search";
+    gap:10px !important;
+    padding:10px 12px !important;
+    align-items:center !important;
+  }
+
+  .logo{
+    font-size:20px !important;
+  }
+
+  .hamburger{
+    display:block !important;
+    justify-self:end !important;
+  }
+
+  .nav-links{
+    display:none !important;
+  }
+
+  .search-wrap{
+    grid-area:search !important;
+    width:100% !important;
+    max-width:none !important;
+  }
+
+  .search-wrap input{
+    width:100% !important;
+  }
+
+  .hero-slider{
+    height:220px !important;
+  }
+
+  .hero-content{
+    padding:0 12px 12px !important;
+    max-width:100% !important;
+  }
+
+  .hero-title{
+    font-size:clamp(1.4rem,7.5vw,2.1rem) !important;
+    line-height:1 !important;
+  }
+
+  .hero-meta{
+    font-size:12px !important;
+  }
+
+  .btn-primary,.btn-ghost{
+    padding:9px 13px !important;
+    font-size:12.5px !important;
+  }
+
+  .hero-stats-bar{
+    margin:0 12px 12px !important;
+  }
+
+  .genre-bar{
+    padding:10px 12px !important;
+  }
+
+  .anime-grid{
+    grid-template-columns:repeat(auto-fill,minmax(100px,1fr)) !important;
+    gap:8px !important;
+  }
+
+  .h-scroll-outer{
+    margin:0 -12px !important;
+    padding-left:12px !important;
+  }
+
+  .h-scroll-inner .anime-card{
+    width:112px !important;
+  }
+
+  .card-title{
+    font-size:10.5px !important;
+  }
+
+  .card-body{
+    padding:7px 8px 9px !important;
+  }
+
+  .modal{
+    width:calc(100vw - 16px) !important;
+    border-radius:16px !important;
+  }
+
+  .modal-header{
+    flex-direction:column !important;
+    padding:12px !important;
+  }
+
+  .modal-poster{
+    width:100% !important;
+    height:210px !important;
+  }
+
+  .modal-body{
+    padding:12px !important;
+  }
+
+  .watch-btns{
+    flex-direction:column !important;
+  }
+
+  .watch-btn{
+    width:100% !important;
+    justify-content:center !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -1036,21 +1150,15 @@ footer a:hover{text-decoration:underline}
 </div>
 
 <script>
-const API = 'https://api.jikan.moe/v4';
-let curTab = 'trending';
-let curGenreId = 0;
-let heroData = [];
-let heroIdx = 0;
-let heroTimer = null;
-let curModalId = null;
-let synopsisExpanded = false;
+const API='https://api.jikan.moe/v4';
+let curTab='trending', curGenreId=0, heroData=[], heroIdx=0, heroTimer=null, curModalId=null, synopsisExpanded=false;
 
-const WATCH_LINKS = [
+const WATCH_LINKS=[
   {l:'▶ Crunchyroll',u:'https://www.crunchyroll.com/search?q=',append:true,c:'wb-primary'},
   {l:'Muse Asia (Free)',u:'https://www.youtube.com/@MuseAsia',append:false,c:'wb-secondary'},
   {l:'Netflix',u:'https://www.netflix.com/search?q=',append:true,c:'wb-secondary'},
   {l:'Prime Video',u:'https://www.amazon.co.uk/s?k=',append:true,c:'wb-secondary'},
-  {l:'Tubi (Free)',u:'https://tubitv.com/category/anime',append:false,c:'wb-secondary'},
+  {l:'Tubi (Free)',u:'https://tubitv.com/category/anime',append:false,c:'wb-secondary'}
 ];
 
 function esc(s){
@@ -1064,7 +1172,7 @@ function esc(s){
 
 async function api(url){
   await new Promise(r=>setTimeout(r,250));
-  const r = await fetch(url);
+  const r=await fetch(url);
   if(!r.ok) throw new Error('API '+r.status);
   return r.json();
 }
@@ -1086,12 +1194,11 @@ function skeletonRow(n){
     </div>`).join('')}</div></div>`;
 }
 
-function cardHTML(a, rank){
-  const img = a.images?.jpg?.large_image_url || a.images?.jpg?.image_url || '';
-  const score = a.score ? a.score.toFixed(1) : 'N/A';
-  const eps = a.episodes ? a.episodes+'ep' : (a.type==='Movie'?'Movie':'?ep');
-  return `
-  <div class="anime-card" onclick="openModal(${a.mal_id},'${esc(a.title)}')">
+function cardHTML(a,rank){
+  const img=a.images?.jpg?.large_image_url||a.images?.jpg?.image_url||'';
+  const score=a.score?a.score.toFixed(1):'N/A';
+  const eps=a.episodes?a.episodes+'ep':(a.type==='Movie'?'Movie':'?ep');
+  return `<div class="anime-card" onclick="openModal(${a.mal_id},'${esc(a.title)}')">
     <div class="card-thumb">
       <img src="${img}" alt="${esc(a.title)}" loading="lazy" onerror="this.style.background='var(--bg3)'">
       <div class="card-overlay"><div class="play-btn">▶</div></div>
@@ -1111,17 +1218,17 @@ function cardHTML(a, rank){
 
 async function loadHero(){
   try{
-    const d = await api(`${API}/top/anime?filter=airing&limit=6`);
-    heroData = d.data || [];
+    const d=await api(`${API}/top/anime?filter=airing&limit=6`);
+    heroData=d.data||[];
     buildHero();
   }catch(e){}
 }
 function buildHero(){
   if(!heroData.length) return;
-  const slider = document.getElementById('heroSlider');
-  slider.innerHTML = heroData.map((a,i)=>{
-    const bg = a.images?.jpg?.large_image_url || a.images?.jpg?.image_url || '';
-    const genres = (a.genres||[]).slice(0,3).map(g=>g.name).join(' · ');
+  const slider=document.getElementById('heroSlider');
+  slider.innerHTML=heroData.map((a,i)=>{
+    const bg=a.images?.jpg?.large_image_url||a.images?.jpg?.image_url||'';
+    const genres=(a.genres||[]).slice(0,3).map(g=>g.name).join(' · ');
     return `<div class="hero-slide ${i===0?'active':''}" id="hslide${i}">
       <img src="${bg}" alt="${esc(a.title)}">
       <div class="hero-grad"></div>
@@ -1142,16 +1249,16 @@ function buildHero(){
 function goSlide(i){
   document.querySelectorAll('.hero-slide').forEach((s,idx)=>s.classList.toggle('active',idx===i));
   document.querySelectorAll('.h-dot').forEach((d,idx)=>d.classList.toggle('active',idx===i));
-  heroIdx = i;
+  heroIdx=i;
 }
 function startHeroAuto(){
   clearInterval(heroTimer);
-  heroTimer = setInterval(()=>goSlide((heroIdx+1)%heroData.length),5000);
+  heroTimer=setInterval(()=>goSlide((heroIdx+1)%heroData.length),5000);
 }
 
-function switchTab(tab, btn){
-  curTab = tab;
-  curGenreId = 0;
+function switchTab(tab,btn){
+  curTab=tab;
+  curGenreId=0;
   document.querySelectorAll('.nav-links button').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
   document.querySelectorAll('.genre-pill').forEach((p,i)=>p.classList.toggle('active',i===0));
@@ -1159,253 +1266,198 @@ function switchTab(tab, btn){
   loadTab();
 }
 function loadTab(){
-  if(curGenreId){ loadGenre(curGenreId); return; }
-  const fns = {trending:loadTrending, seasonal:loadSeasonal, top:loadTop, airing:loadAiring};
-  (fns[curTab] || loadTrending)();
+  if(curGenreId){loadGenre(curGenreId);return}
+  const fns={trending:loadTrending,seasonal:loadSeasonal,top:loadTop,airing:loadAiring};
+  (fns[curTab]||loadTrending)();
 }
 
 async function loadTrending(){
-  const mc = document.getElementById('mainContent');
-  mc.innerHTML = `<div class="section-block"><div class="section-title">🔥 Trending</div>${skeletonGrid(12)}</div>
-                  <div class="section-block"><div class="section-title">🌸 Airing This Season</div>${skeletonRow(8)}</div>`;
+  const mc=document.getElementById('mainContent');
+  mc.innerHTML=`<div class="section-block"><div class="section-title">🔥 Trending</div>${skeletonGrid(12)}</div><div class="section-block"><div class="section-title">🌸 Airing This Season</div>${skeletonRow(8)}</div>`;
   try{
-    const [trend, seas] = await Promise.all([
+    const [trend,seas]=await Promise.all([
       api(`${API}/top/anime?filter=bypopularity&limit=12`),
       api(`${API}/seasons/now?limit=12`)
     ]);
-    mc.innerHTML = `
-      <div class="section-block">
-        <div class="section-title">🔥 Trending Now</div>
-        <div class="anime-grid">${(trend.data||[]).map((a,i)=>cardHTML(a,i)).join('')}</div>
-      </div>
-      <div class="section-block">
-        <div class="section-title">🌸 Airing This Season</div>
-        <div class="h-scroll-outer"><div class="h-scroll-inner">${(seas.data||[]).map(a=>cardHTML(a,null)).join('')}</div></div>
-      </div>`;
-    document.getElementById('statAiring').textContent = (seas.data||[]).length + '+';
+    mc.innerHTML=`<div class="section-block"><div class="section-title">🔥 Trending Now</div><div class="anime-grid">${(trend.data||[]).map((a,i)=>cardHTML(a,i)).join('')}</div></div><div class="section-block"><div class="section-title">🌸 Airing This Season</div><div class="h-scroll-outer"><div class="h-scroll-inner">${(seas.data||[]).map(a=>cardHTML(a,null)).join('')}</div></div></div>`;
+    document.getElementById('statAiring').textContent=(seas.data||[]).length+'+';
   }catch(e){showError(mc)}
 }
 
 async function loadSeasonal(){
-  const mc = document.getElementById('mainContent');
-  mc.innerHTML = `<div class="section-block"><div class="section-title">🌸 This Season</div>${skeletonGrid(16)}</div>`;
+  const mc=document.getElementById('mainContent');
+  mc.innerHTML=`<div class="section-block"><div class="section-title">🌸 This Season</div>${skeletonGrid(16)}</div>`;
   try{
-    const d = await api(`${API}/seasons/now?limit=24`);
-    mc.innerHTML = `<div class="section-block">
-      <div class="section-title">🌸 This Season</div>
-      <div class="anime-grid">${(d.data||[]).map(a=>cardHTML(a,null)).join('')}</div>
-    </div>`;
+    const d=await api(`${API}/seasons/now?limit=24`);
+    mc.innerHTML=`<div class="section-block"><div class="section-title">🌸 This Season</div><div class="anime-grid">${(d.data||[]).map(a=>cardHTML(a,null)).join('')}</div></div>`;
   }catch(e){showError(mc)}
 }
 
 async function loadTop(){
-  const mc = document.getElementById('mainContent');
-  mc.innerHTML = `<div class="section-block"><div class="section-title">⭐ All Time Top</div>${skeletonGrid(16)}</div>
-                  <div class="section-block"><div class="section-title">🎬 Top Movies</div>${skeletonRow(8)}</div>`;
+  const mc=document.getElementById('mainContent');
+  mc.innerHTML=`<div class="section-block"><div class="section-title">⭐ All Time Top</div>${skeletonGrid(16)}</div><div class="section-block"><div class="section-title">🎬 Top Movies</div>${skeletonRow(8)}</div>`;
   try{
-    const [top, movies] = await Promise.all([
+    const [top,movies]=await Promise.all([
       api(`${API}/top/anime?limit=16`),
       api(`${API}/top/anime?type=movie&limit=12`)
     ]);
-    mc.innerHTML = `
-      <div class="section-block">
-        <div class="section-title">⭐ All Time Top Rated</div>
-        <div class="anime-grid">${(top.data||[]).map((a,i)=>cardHTML(a,i)).join('')}</div>
-      </div>
-      <div class="section-block">
-        <div class="section-title">🎬 Top Movies</div>
-        <div class="h-scroll-outer"><div class="h-scroll-inner">${(movies.data||[]).map(a=>cardHTML(a,null)).join('')}</div></div>
-      </div>`;
+    mc.innerHTML=`<div class="section-block"><div class="section-title">⭐ All Time Top Rated</div><div class="anime-grid">${(top.data||[]).map((a,i)=>cardHTML(a,i)).join('')}</div></div><div class="section-block"><div class="section-title">🎬 Top Movies</div><div class="h-scroll-outer"><div class="h-scroll-inner">${(movies.data||[]).map(a=>cardHTML(a,null)).join('')}</div></div></div>`;
   }catch(e){showError(mc)}
 }
 
 async function loadAiring(){
-  const mc = document.getElementById('mainContent');
-  mc.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+  const mc=document.getElementById('mainContent');
+  mc.innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
   try{
-    const d = await api(`${API}/top/anime?filter=airing&limit=20`);
-    const list = d.data || [];
-    mc.innerHTML = `<div class="section-block">
-      <div class="section-title">📡 Airing Right Now</div>
-      <div class="airing-list">${list.map((a,i)=>`
-        <div class="airing-item" onclick="openModal(${a.mal_id},'${esc(a.title)}')" style="animation-delay:${i*.04}s">
-          <div class="airing-dot"></div>
-          <img class="airing-img" src="${a.images?.jpg?.image_url||''}" alt="${esc(a.title)}" loading="lazy">
-          <div class="airing-info">
-            <div class="airing-name">${esc(a.title)}</div>
-            <div class="airing-sub">${a.episodes||'?'} eps · ${(a.genres||[]).slice(0,2).map(g=>g.name).join(', ')||'Anime'}</div>
-          </div>
-          <div class="airing-score">★ ${a.score?a.score.toFixed(1):'?'}</div>
-        </div>`).join('')}
-      </div>
-    </div>`;
+    const d=await api(`${API}/top/anime?filter=airing&limit=20`);
+    const list=d.data||[];
+    mc.innerHTML=`<div class="section-block"><div class="section-title">📡 Airing Right Now</div><div class="airing-list">${list.map((a,i)=>`
+      <div class="airing-item" onclick="openModal(${a.mal_id},'${esc(a.title)}')" style="animation-delay:${i*.04}s">
+        <div class="airing-dot"></div>
+        <img class="airing-img" src="${a.images?.jpg?.image_url||''}" alt="${esc(a.title)}" loading="lazy">
+        <div class="airing-info">
+          <div class="airing-name">${esc(a.title)}</div>
+          <div class="airing-sub">${a.episodes||'?'} eps · ${(a.genres||[]).slice(0,2).map(g=>g.name).join(', ')||'Anime'}</div>
+        </div>
+        <div class="airing-score">★ ${a.score?a.score.toFixed(1):'?'}</div>
+      </div>`).join('')}</div></div>`;
   }catch(e){showError(mc)}
 }
 
 async function loadGenre(id){
-  const mc = document.getElementById('mainContent');
-  mc.innerHTML = `<div class="section-block"><div class="section-title">Genre Results</div>${skeletonGrid(16)}</div>`;
+  const mc=document.getElementById('mainContent');
+  mc.innerHTML=`<div class="section-block"><div class="section-title">Genre Results</div>${skeletonGrid(16)}</div>`;
   try{
-    const d = await api(`${API}/anime?genres=${id}&order_by=score&sort=desc&limit=24&sfw=true`);
-    mc.innerHTML = `<div class="section-block">
-      <div class="section-title">Genre Anime</div>
-      <div class="anime-grid">${(d.data||[]).map(a=>cardHTML(a,null)).join('')}</div>
-    </div>`;
+    const d=await api(`${API}/anime?genres=${id}&order_by=score&sort=desc&limit=24&sfw=true`);
+    mc.innerHTML=`<div class="section-block"><div class="section-title">Genre Anime</div><div class="anime-grid">${(d.data||[]).map(a=>cardHTML(a,null)).join('')}</div></div>`;
   }catch(e){showError(mc)}
 }
 
-function filterGenre(id, btn){
+function filterGenre(id,btn){
   document.querySelectorAll('.genre-pill').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
-  curGenreId = id;
+  curGenreId=id;
   if(id===0) loadTab(); else loadGenre(id);
 }
 
 function showError(container){
-  container.innerHTML = `<div class="error-msg"><span class="err-icon">😵</span>Could not load. Check your connection.<br><button class="retry-btn" onclick="loadTab()">Retry</button></div>`;
+  container.innerHTML=`<div class="error-msg"><span class="err-icon">😵</span>Could not load. Check your connection.<br><button class="retry-btn" onclick="loadTab()">Retry</button></div>`;
 }
 
 let searchTimer;
-const inp = document.getElementById('searchInput');
-const drop = document.getElementById('searchDropdown');
+const inp=document.getElementById('searchInput');
+const drop=document.getElementById('searchDropdown');
 
-inp.addEventListener('input', function(){
+inp.addEventListener('input',function(){
   clearTimeout(searchTimer);
-  const q = this.value.trim();
-  if(!q){
-    drop.classList.remove('open');
-    return;
-  }
-  drop.innerHTML = '<div style="padding:12px;color:var(--muted);font-size:13px">Searching...</div>';
+  const q=this.value.trim();
+  if(!q){drop.classList.remove('open');return}
+  drop.innerHTML='<div style="padding:12px;color:var(--muted);font-size:13px">Searching...</div>';
   drop.classList.add('open');
-  searchTimer = setTimeout(()=>doSearch(q),420);
+  searchTimer=setTimeout(()=>doSearch(q),420);
 });
-inp.addEventListener('keydown', e=>{
+inp.addEventListener('keydown',e=>{
   if(e.key==='Enter'){
     clearTimeout(searchTimer);
     doSearch(inp.value.trim(),true);
   }
 });
-inp.addEventListener('blur', ()=>setTimeout(()=>drop.classList.remove('open'),200));
+inp.addEventListener('blur',()=>setTimeout(()=>drop.classList.remove('open'),200));
 
-async function doSearch(q, fullGrid=false){
+async function doSearch(q,fullGrid=false){
   if(!q) return;
   try{
-    const d = await api(`${API}/anime?q=${encodeURIComponent(q)}&limit=${fullGrid?24:7}&sfw=true`);
-    const list = d.data || [];
+    const d=await api(`${API}/anime?q=${encodeURIComponent(q)}&limit=${fullGrid?24:7}&sfw=true`);
+    const list=d.data||[];
     if(fullGrid){
       drop.classList.remove('open');
-      document.getElementById('mainContent').innerHTML = `<div class="section-block">
-        <div class="section-title">Results for "${esc(q)}"</div>
-        <div class="anime-grid">${list.map(a=>cardHTML(a,null)).join('')}</div>
-      </div>`;
+      document.getElementById('mainContent').innerHTML=`<div class="section-block"><div class="section-title">Results for "${esc(q)}"</div><div class="anime-grid">${list.map(a=>cardHTML(a,null)).join('')}</div></div>`;
       return;
     }
     if(!list.length){
-      drop.innerHTML = '<div style="padding:12px;color:var(--muted);font-size:13px">No results.</div>';
+      drop.innerHTML='<div style="padding:12px;color:var(--muted);font-size:13px">No results.</div>';
       return;
     }
-    drop.innerHTML = list.map(a=>`
-      <div class="sd-item" onclick="openModal(${a.mal_id},'${esc(a.title)}');drop.classList.remove('open')">
-        <img src="${a.images?.jpg?.image_url||''}" alt="">
-        <div>
-          <div class="sd-title">${esc(a.title)}</div>
-          <div class="sd-meta">${a.type||'TV'} · ${a.episodes||'?'}ep ${a.score?'· ★'+a.score:''}</div>
-        </div>
-      </div>`).join('');
+    drop.innerHTML=list.map(a=>`<div class="sd-item" onclick="openModal(${a.mal_id},'${esc(a.title)}');drop.classList.remove('open')">
+      <img src="${a.images?.jpg?.image_url||''}" alt="">
+      <div><div class="sd-title">${esc(a.title)}</div><div class="sd-meta">${a.type||'TV'} · ${a.episodes||'?'}ep ${a.score?'· ★'+a.score:''}</div></div>
+    </div>`).join('');
     drop.classList.add('open');
   }catch(e){
-    drop.innerHTML = '<div style="padding:12px;color:var(--muted);font-size:13px">Search failed.</div>';
+    drop.innerHTML='<div style="padding:12px;color:var(--muted);font-size:13px">Search failed.</div>';
   }
 }
 
-async function openModal(id, title){
-  curModalId = id;
-  synopsisExpanded = false;
-  document.getElementById('mTitle').textContent = title || 'Loading...';
-  document.getElementById('mSub').textContent = '';
-  document.getElementById('mTags').innerHTML = '';
-  document.getElementById('mScore').textContent = '';
-  document.getElementById('mRank').textContent = '';
-  document.getElementById('mSynopsis').textContent = 'Loading details...';
-  document.getElementById('mPoster').src = '';
-  document.getElementById('mWatchBtns').innerHTML = '';
-  document.getElementById('modalTrailer').innerHTML = '<div class="no-trailer"><div class="no-trailer-icon">🎬</div><span>Loading trailer...</span></div>';
+async function openModal(id,title){
+  curModalId=id;
+  synopsisExpanded=false;
+  document.getElementById('mTitle').textContent=title||'Loading...';
+  document.getElementById('mSub').textContent='';
+  document.getElementById('mTags').innerHTML='';
+  document.getElementById('mScore').textContent='';
+  document.getElementById('mRank').textContent='';
+  document.getElementById('mSynopsis').textContent='Loading details...';
+  document.getElementById('mPoster').src='';
+  document.getElementById('mWatchBtns').innerHTML='';
+  document.getElementById('modalTrailer').innerHTML='<div class="no-trailer"><div class="no-trailer-icon">🎬</div><span>Loading trailer...</span></div>';
   document.getElementById('modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  document.body.style.overflow='hidden';
   try{
-    const d = await api(`${API}/anime/${id}/full`);
-    const a = d.data;
-    document.getElementById('mPoster').src = a.images?.jpg?.large_image_url || '';
-    document.getElementById('mTitle').textContent = a.title;
-    document.getElementById('mSub').textContent = a.title_english || a.title_japanese || '';
-    document.getElementById('mScore').textContent = `★ ${a.score?a.score.toFixed(2):'N/A'}`;
-    document.getElementById('mRank').textContent = `Rank #${a.rank||'?'} · ${a.members?a.members.toLocaleString():'?'} members`;
-    const synopsis = a.synopsis || 'No synopsis available.';
-    const shortSyn = synopsis.length > 280 ? synopsis.slice(0,280) + '…' : synopsis;
-    document.getElementById('mSynopsis').innerHTML =
+    const d=await api(`${API}/anime/${id}/full`);
+    const a=d.data;
+    document.getElementById('mPoster').src=a.images?.jpg?.large_image_url||'';
+    document.getElementById('mTitle').textContent=a.title;
+    document.getElementById('mSub').textContent=a.title_english||a.title_japanese||'';
+    document.getElementById('mScore').textContent=`★ ${a.score?a.score.toFixed(2):'N/A'}`;
+    document.getElementById('mRank').textContent=`Rank #${a.rank||'?'} · ${a.members?a.members.toLocaleString():'?'} members`;
+    const synopsis=a.synopsis||'No synopsis available.';
+    const shortSyn=synopsis.length>280?synopsis.slice(0,280)+'…':synopsis;
+    document.getElementById('mSynopsis').innerHTML=
       `<span id="synText">${esc(shortSyn)}</span>${synopsis.length>280?`<span class="synopsis-toggle" onclick="toggleSyn(${JSON.stringify(synopsis)})"> Read more</span>`:''}`;
-    const tags = [...(a.genres||[]), ...(a.themes||[])].slice(0,6);
-    document.getElementById('mTags').innerHTML = [
-      a.type ? `<span class="m-tag">${esc(a.type)}</span>` : '',
-      a.episodes ? `<span class="m-tag">${a.episodes} eps</span>` : '',
-      a.status ? `<span class="m-tag">${esc(a.status)}</span>` : '',
-      a.year ? `<span class="m-tag">${a.year}</span>` : '',
+    const tags=[...(a.genres||[]),...(a.themes||[])].slice(0,6);
+    document.getElementById('mTags').innerHTML=[
+      a.type?`<span class="m-tag">${esc(a.type)}</span>`:'',
+      a.episodes?`<span class="m-tag">${a.episodes} eps</span>`:'',
+      a.status?`<span class="m-tag">${esc(a.status)}</span>`:'',
+      a.year?`<span class="m-tag">${a.year}</span>`:'',
       ...tags.map(g=>`<span class="m-tag">${esc(g.name)}</span>`)
     ].join('');
-    document.getElementById('mWatchBtns').innerHTML = WATCH_LINKS.map(l=>`
-      <a href="${l.append ? l.u + encodeURIComponent(a.title) : l.u}" target="_blank" rel="noopener" class="watch-btn ${l.c}">${l.l}</a>`).join('');
-    const yt = a.trailer?.youtube_id;
-    document.getElementById('modalTrailer').innerHTML = yt
-      ? `<iframe src="https://www.youtube.com/embed/${yt}?autoplay=1" allow="autoplay;fullscreen" allowfullscreen></iframe>`
-      : `<div class="no-trailer"><div class="no-trailer-icon">🎬</div><span>No trailer available</span></div>`;
+    document.getElementById('mWatchBtns').innerHTML=WATCH_LINKS.map(l=>`
+      <a href="${l.append?l.u+encodeURIComponent(a.title):l.u}" target="_blank" rel="noopener" class="watch-btn ${l.c}">${l.l}</a>`).join('');
+    const yt=a.trailer?.youtube_id;
+    document.getElementById('modalTrailer').innerHTML=yt
+      ?`<iframe src="https://www.youtube.com/embed/${yt}?autoplay=1" allow="autoplay;fullscreen" allowfullscreen></iframe>`
+      :`<div class="no-trailer"><div class="no-trailer-icon">🎬</div><span>No trailer available</span></div>`;
   }catch(e){
-    document.getElementById('mSynopsis').textContent = 'Could not load details. Please try again.';
+    document.getElementById('mSynopsis').textContent='Could not load details. Please try again.';
   }
 }
 
 function toggleSyn(full){
-  synopsisExpanded = !synopsisExpanded;
-  const el = document.getElementById('mSynopsis');
-  const short = full.length > 280 ? full.slice(0,280) + '…' : full;
-  el.innerHTML = `<span id="synText">${esc(synopsisExpanded ? full : short)}</span><span class="synopsis-toggle" onclick="toggleSyn(${JSON.stringify(full)})">${synopsisExpanded?' Read less':' Read more'}</span>`;
+  synopsisExpanded=!synopsisExpanded;
+  const el=document.getElementById('mSynopsis');
+  const short=full.length>280?full.slice(0,280)+'…':full;
+  el.innerHTML=`<span id="synText">${esc(synopsisExpanded?full:short)}</span><span class="synopsis-toggle" onclick="toggleSyn(${JSON.stringify(full)})">${synopsisExpanded?' Read less':' Read more'}</span>`;
 }
 function closeModal(){
   document.getElementById('modal').classList.remove('open');
-  document.getElementById('modalTrailer').innerHTML = '';
-  document.body.style.overflow = '';
+  document.getElementById('modalTrailer').innerHTML='';
+  document.body.style.overflow='';
 }
-function closeModalBg(e){
-  if(e.target===document.getElementById('modal')) closeModal();
-}
-function goDetail(){
-  closeModal();
-  window.location.href = `anime.html?id=${curModalId}`;
-}
+function closeModalBg(e){if(e.target===document.getElementById('modal')) closeModal()}
+function goDetail(){closeModal();window.location.href=`anime.html?id=${curModalId}`}
+function toggleDrawer(){document.getElementById('mobDrawer').classList.toggle('open')}
 
-function toggleDrawer(){
-  document.getElementById('mobDrawer').classList.toggle('open');
-}
-
-window.addEventListener('scroll', ()=>{
-  document.getElementById('btt').classList.toggle('show', scrollY > 400);
-});
-
-window.addEventListener('resize', ()=>{
-  if(window.innerWidth > 780){
-    document.getElementById('mobDrawer').classList.remove('open');
-  }
-});
-
-document.addEventListener('click', e=>{
-  const drawer = document.getElementById('mobDrawer');
-  const burger = document.getElementById('hamburger');
-  if(drawer.classList.contains('open') && !drawer.contains(e.target) && !burger.contains(e.target)){
+window.addEventListener('scroll',()=>{document.getElementById('btt').classList.toggle('show',scrollY>400)})
+window.addEventListener('resize',()=>{if(window.innerWidth>780){document.getElementById('mobDrawer').classList.remove('open')}})
+document.addEventListener('click',e=>{
+  const drawer=document.getElementById('mobDrawer');
+  const burger=document.getElementById('hamburger');
+  if(drawer.classList.contains('open')&&!drawer.contains(e.target)&&!burger.contains(e.target)){
     drawer.classList.remove('open');
   }
 });
-
-document.addEventListener('keydown', e=>{
+document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     closeModal();
     document.getElementById('mobDrawer').classList.remove('open');
