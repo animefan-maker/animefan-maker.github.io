@@ -458,24 +458,24 @@ footer a:hover{text-decoration:underline}
      FIREBASE + APP SCRIPT
 ════════════════════════════════════════ -->
 <script type="module">
-import { initializeApp }                         from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { initializeApp }                   from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 import { getAuth, onAuthStateChanged,
          signInAnonymously,
          signInWithEmailAndPassword,
          createUserWithEmailAndPassword,
-         signOut, updateProfile }                from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+         signOut, updateProfile }          from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
 import { getFirestore, doc, setDoc,
          deleteDoc, getDoc, getDocs,
-         collection, serverTimestamp }           from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+         collection, serverTimestamp }     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 /* ── YOUR FIREBASE CONFIG ── */
 const firebaseConfig = {
-  apiKey:            "AIzaSyCYh9qv8YolwJJ4Pu-9iIgY-aJF2U-1120",
+  apiKey:            "AIzaSyCYh9qv8YolwJJ4Pu-9iIgY-aJF2U-1l20",
   authDomain:        "anime-555.firebaseapp.com",
   projectId:         "anime-555",
   storageBucket:     "anime-555.firebasestorage.app",
   messagingSenderId: "1024204889528",
-  appId:             "1:1024204889528:web:8e0ecf872303e1dcda434d"
+  appId:             "1:1024204889528:web:17ed8b2879e5cfcada434d"
 };
 
 const app  = initializeApp(firebaseConfig);
