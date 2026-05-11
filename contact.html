@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a0f">
+<title>Contact | AniTrack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0f;color:#f0f0f5;font-family:'Outfit',sans-serif;line-height:1.7;padding:24px}
+main{max-width:900px;margin:0 auto}
+h1,h2{font-family:'Bebas Neue',sans-serif;letter-spacing:1px}
+h1{font-size:42px;color:#e63946;margin-bottom:12px}
+h2{font-size:28px;margin:28px 0 10px;color:#ffd166}
+p,li,label,input,textarea{color:#c9c9d6;font-size:15px}
+a{color:#e63946;text-decoration:none}
+a:hover{text-decoration:underline}
+.card{background:#14141e;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px}
+.toplink{display:inline-block;margin-bottom:18px;color:#888899}
+form{display:grid;gap:12px;margin-top:18px}
+input,textarea{
+  width:100%;
+  background:#0f1016;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;
+  padding:12px 14px;
+  outline:none;
+}
+button{
+  background:#e63946;
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  padding:12px 16px;
+  font-weight:700;
+  cursor:pointer;
+}
+button:hover{background:#ff6b6b}
+.footer{margin-top:30px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08);font-size:13px;color:#888899}
+</style>
+</head>
+<body>
+<main>
+<a class="toplink" href="index.html">← Back to home</a>
+<div class="card">
+<h1>Contact Us</h1>
+<p>Use the form below or email us directly for support, business inquiries, or partnership requests.</p>
+
+<form action="mailto:hello@anitrack.site" method="post" enctype="text/plain">
+  <input type="text" name="name" placeholder="Your name" required>
+  <input type="email" name="email" placeholder="Your email" required>
+  <textarea name="message" rows="6" placeholder="Your message" required></textarea>
+  <button type="submit">Send Message</button>
+</form>
+
+<h2>Direct email</h2>
+<p>General: <a href="mailto:hello@anitrack.site">hello@anitrack.site</a></p>
+<p>Privacy: <a href="mailto:privacy@anitrack.site">privacy@anitrack.site</a></p>
+<p>Legal: <a href="mailto:legal@anitrack.site">legal@anitrack.site</a></p>
+
+<div class="footer">
+Reply times depend on message volume.
+</div>
+</div>
+</main>
+</body>
+</html>
